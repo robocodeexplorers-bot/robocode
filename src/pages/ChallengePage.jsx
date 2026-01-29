@@ -492,8 +492,7 @@ const ChallengePage = () => {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4 min-h-[400px]">
-              {mode === 'blocks' ? (
+<div className="bg-gray-50 rounded-xl p-4 min-h-[400px] relative overflow-hidden">              {mode === 'blocks' ? (
                 <BlocklyEditor onCodeChange={setGeneratedCode} />
               ) : (
                 <pre className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto min-h-[400px]">
