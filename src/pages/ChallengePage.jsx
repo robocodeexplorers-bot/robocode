@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Play, RotateCcw, Code as CodeIcon, Blocks } from 'lucide-react';
+import { ArrowLeft, Play, RotateCcw, Code as CodeIcon, Blocks, ChevronDown, ChevronUp } from 'lucide-react';
 import Phaser from 'phaser';
 import BlocklyEditor from '../components/BlocklyEditor';
 
@@ -9,6 +9,7 @@ const ChallengePage = () => {
   const [mode, setMode] = useState('blocks');
   const [generatedCode, setGeneratedCode] = useState('');
   const [isRunning, setIsRunning] = useState(false);
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
   const gameRef = useRef(null);
   const phaserGameRef = useRef(null);
   const robotStateRef = useRef({
@@ -55,7 +56,6 @@ const ChallengePage = () => {
     const cols = 10;
     const rows = 10;
 
-    // Draw grid
     const graphics = scene.add.graphics();
     graphics.lineStyle(1, 0xcccccc, 0.5);
     
@@ -66,20 +66,16 @@ const ChallengePage = () => {
       graphics.lineBetween(0, i * gridSize, cols * gridSize, i * gridSize);
     }
 
-    // Create robot
     const robot = scene.add.circle(30, 30, 20, 0x2364aa);
     robot.setStrokeStyle(3, 0xffffff);
 
-    // Add direction indicator
     const arrow = scene.add.triangle(45, 30, 0, -8, 0, 8, 12, 0, 0xffffff);
 
     scene.robot = robot;
     scene.arrow = arrow;
     scene.gridSize = gridSize;
 
-    // Challenge-specific setup
     if (challengeId === '3') {
-      // Challenge 3: Collect Stars
       const starPositions = [
         { x: 3, y: 2 },
         { x: 7, y: 5 },
@@ -102,7 +98,6 @@ const ChallengePage = () => {
       scene.stars = stars;
       scene.challengeType = 'collect';
     } else {
-      // Challenges 1 & 2: Reach Target
       const target = scene.add.star(570, 570, 5, 15, 25, 0xfec601);
       target.setStrokeStyle(2, 0xffffff);
       scene.target = target;
@@ -123,10 +118,8 @@ const ChallengePage = () => {
     const scene = phaserGameRef.current?.scene?.scenes[0];
     if (!scene) return;
 
-    // Reset robot position
     robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
     
-    // Reset stars if Challenge 3
     if (scene.stars) {
       scene.stars.forEach(star => {
         star.collected = false;
@@ -137,7 +130,6 @@ const ChallengePage = () => {
     
     updateRobotVisual(scene);
 
-    // Create robot controller
     const robot = {
       moveForward: async () => {
         const dir = robotStateRef.current.direction;
@@ -146,7 +138,6 @@ const ChallengePage = () => {
         else if (dir === 180) robotStateRef.current.x--;
         else if (dir === 270) robotStateRef.current.y--;
 
-        // Keep robot in bounds
         robotStateRef.current.x = Math.max(0, Math.min(9, robotStateRef.current.x));
         robotStateRef.current.y = Math.max(0, Math.min(9, robotStateRef.current.y));
 
@@ -170,7 +161,6 @@ const ChallengePage = () => {
               star.collected = true;
               robotStateRef.current.starsCollected++;
               
-              // Animate star collection
               scene.tweens.add({
                 targets: star,
                 alpha: 0,
@@ -193,10 +183,8 @@ const ChallengePage = () => {
       const executeCode = new AsyncFunction('robot', generatedCode);
       await executeCode(robot);
 
-      // Check win condition
       setTimeout(() => {
         if (scene.challengeType === 'collect') {
-          // Challenge 3: Check if all stars collected
           const totalStars = scene.stars.length;
           if (robotStateRef.current.starsCollected === totalStars) {
             alert(`🎉 Amazing! You collected all ${totalStars} stars!`);
@@ -204,7 +192,6 @@ const ChallengePage = () => {
             alert(`You collected ${robotStateRef.current.starsCollected} out of ${totalStars} stars. Try again!`);
           }
         } else {
-          // Challenges 1 & 2: Check if reached target
           if (robotStateRef.current.x === 9 && robotStateRef.current.y === 9) {
             alert('🎉 Congratulations! You completed the challenge!');
           } else {
@@ -259,7 +246,6 @@ const ChallengePage = () => {
     if (scene) {
       robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
       
-      // Reset stars if Challenge 3
       if (scene.stars) {
         scene.stars.forEach(star => {
           star.collected = false;
@@ -276,6 +262,7 @@ const ChallengePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-yellow-50">
+      {/* Header */}
       <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -293,7 +280,9 @@ const ChallengePage = () => {
         </div>
       </nav>
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Challenge Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-sm font-semibold text-gray-500">Challenge {id}</span>
@@ -305,22 +294,60 @@ const ChallengePage = () => {
           <p className="text-lg text-gray-600">{challenge.description}</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">📋 Instructions</h2>
-              <div className="space-y-3">
-                {challenge.instructions.map((instruction, index) => (
-                  <div key={index} className="flex gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-[#2364aa] text-white rounded-full flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </div>
-                    <p className="text-gray-700">{instruction}</p>
-                  </div>
-                ))}
+        {/* Mobile-First Layout / Desktop Grid */}
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6">
+          {/* Robot Simulator - First on Mobile, Right on Desktop */}
+          <div className="lg:order-2 bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
+            <div 
+              ref={gameRef} 
+              className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
+            />
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#2364aa]"></div>
+                <span>Robot</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-[#fec601]"></div>
+                <span>{id === '3' ? 'Stars' : 'Target'}</span>
               </div>
             </div>
+          </div>
 
+          {/* Left Column - Instructions & Code Editor */}
+          <div className="lg:order-1 space-y-6">
+            {/* Collapsible Instructions Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <button
+                onClick={() => setInstructionsOpen(!instructionsOpen)}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  📋 Instructions
+                </h2>
+                {instructionsOpen ? (
+                  <ChevronUp className="w-6 h-6 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-6 h-6 text-gray-400" />
+                )}
+              </button>
+              
+              {instructionsOpen && (
+                <div className="px-6 pb-6 space-y-3 border-t border-gray-100">
+                  {challenge.instructions.map((instruction, index) => (
+                    <div key={index} className="flex gap-3 pt-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-[#2364aa] text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        {index + 1}
+                      </div>
+                      <p className="text-gray-700">{instruction}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Code Editor Card */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">💻 Your Code</h2>
@@ -377,24 +404,6 @@ const ChallengePage = () => {
                   <RotateCcw className="w-5 h-5" />
                   Reset
                 </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
-            <div 
-              ref={gameRef} 
-              className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
-            />
-            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-[#2364aa]"></div>
-                <span>Robot</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-[#fec601]"></div>
-                <span>{id === '3' ? 'Stars' : 'Target'}</span>
               </div>
             </div>
           </div>
