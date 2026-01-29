@@ -294,10 +294,10 @@ const ChallengePage = () => {
           <p className="text-lg text-gray-600">{challenge.description}</p>
         </div>
 
-        {/* Mobile-First Layout / Desktop Grid */}
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6">
-          {/* Robot Simulator - First on Mobile, Right on Desktop */}
-            <div className="sticky top-16 z-40 lg:order-2 bg-white rounded-2xl shadow-lg p-6 lg:relative lg:top-0">            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
+        {/* Robot Simulator - Sticky on Mobile */}
+        <div className="sticky top-16 z-30 mb-6 lg:hidden">
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
             <div 
               ref={gameRef} 
               className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
@@ -313,9 +313,12 @@ const ChallengePage = () => {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Desktop Layout */}
+        <div className="hidden lg:grid lg:grid-cols-2 gap-6">
           {/* Left Column - Instructions & Code Editor */}
-          <div className="lg:order-1 space-y-6">
+          <div className="space-y-6">
             {/* Collapsible Instructions Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <button
@@ -404,6 +407,118 @@ const ChallengePage = () => {
                   Reset
                 </button>
               </div>
+            </div>
+          </div>
+
+       {/* Right Column - Robot Simulator for Desktop */}
+<div className="bg-white rounded-2xl shadow-lg p-6">
+  <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
+  <div 
+    id="phaser-desktop"
+    className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
+  />
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#2364aa]"></div>
+                <span>Robot</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-[#fec601]"></div>
+                <span>{id === '3' ? 'Stars' : 'Target'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Layout - Instructions & Code Only */}
+        <div className="lg:hidden space-y-6">
+          {/* Collapsible Instructions Card */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <button
+              onClick={() => setInstructionsOpen(!instructionsOpen)}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                📋 Instructions
+              </h2>
+              {instructionsOpen ? (
+                <ChevronUp className="w-6 h-6 text-gray-400" />
+              ) : (
+                <ChevronDown className="w-6 h-6 text-gray-400" />
+              )}
+            </button>
+            
+            {instructionsOpen && (
+              <div className="px-6 pb-6 space-y-3 border-t border-gray-100">
+                {challenge.instructions.map((instruction, index) => (
+                  <div key={index} className="flex gap-3 pt-3">
+                    <div className="flex-shrink-0 w-6 h-6 bg-[#2364aa] text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      {index + 1}
+                    </div>
+                    <p className="text-gray-700">{instruction}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Code Editor Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">💻 Your Code</h2>
+              <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setMode('blocks')}
+                  className={`px-4 py-2 rounded-md font-semibold text-sm transition-all flex items-center gap-2 ${
+                    mode === 'blocks'
+                      ? 'bg-white text-[#2364aa] shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Blocks className="w-4 h-4" />
+                  Blocks
+                </button>
+                <button
+                  onClick={() => setMode('code')}
+                  className={`px-4 py-2 rounded-md font-semibold text-sm transition-all flex items-center gap-2 ${
+                    mode === 'code'
+                      ? 'bg-white text-[#2364aa] shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <CodeIcon className="w-4 h-4" />
+                  Code
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-4 min-h-[400px]">
+              {mode === 'blocks' ? (
+                <BlocklyEditor onCodeChange={setGeneratedCode} />
+              ) : (
+                <pre className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto min-h-[400px]">
+                  {generatedCode || '// Your JavaScript code will appear here\n\n// Start dragging blocks to see code!'}
+                </pre>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={handleRunCode}
+                disabled={isRunning}
+                className="flex-1 bg-[#2364aa] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#1a4d7f] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Play className="w-5 h-5" />
+                {isRunning ? 'Running...' : 'Run Code'}
+              </button>
+              <button
+                onClick={handleReset}
+                disabled={isRunning}
+                className="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <RotateCcw className="w-5 h-5" />
+                Reset
+              </button>
             </div>
           </div>
         </div>
