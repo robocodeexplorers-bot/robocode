@@ -297,8 +297,7 @@ const ChallengePage = () => {
         {/* Mobile-First Layout / Desktop Grid */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6">
           {/* Robot Simulator - First on Mobile, Right on Desktop */}
-          <div className="lg:order-2 bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
+            <div className="sticky top-16 z-40 lg:order-2 bg-white rounded-2xl shadow-lg p-6 lg:relative lg:top-0">            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
             <div 
               ref={gameRef} 
               className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
