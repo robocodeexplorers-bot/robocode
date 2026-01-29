@@ -1,37 +1,74 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Code, BookOpen, Video, FileText, Home } from 'lucide-react';
 
 const LessonsPage = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-yellow-50">
       {/* Header */}
-      <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#2364aa] to-[#3da5d9] rounded-lg flex items-center justify-center">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold text-[#2364aa]">
-                RoboCode
-              </span>
-            </Link>
-            
-            <div className="hidden md:flex items-center gap-6">
-              <Link to="/challenges" className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors">
-                All Challenges
-              </Link>
-              <Link to="/lessons" className="text-[#2364aa] font-semibold">
-                Lessons
-              </Link>
-              <Link to="/contact" className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors">
-                Contact Us
-              </Link>
-            </div>
-          </div>
+   <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="flex items-center justify-between">
+      <Link to="/" className="flex items-center gap-2">
+        <div className="w-10 h-10 bg-gradient-to-br from-[#2364aa] to-[#3da5d9] rounded-lg flex items-center justify-center">
+          <Code className="w-6 h-6 text-white" />
         </div>
-      </nav>
+        <span className="text-2xl font-bold text-[#2364aa]">
+          RoboCode
+        </span>
+      </Link>
+      
+      <div className="hidden md:flex items-center gap-6">
+        <Link to="/challenges" className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors">
+          All Challenges
+        </Link>
+        <Link to="/lessons" className="text-[#2364aa] font-semibold">
+          Lessons
+        </Link>
+        <Link to="/contact" className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors">
+          Contact Us
+        </Link>
+      </div>
+
+      <button 
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        <div className="w-6 h-0.5 bg-gray-700 mb-1.5"></div>
+        <div className="w-6 h-0.5 bg-gray-700 mb-1.5"></div>
+        <div className="w-6 h-0.5 bg-gray-700"></div>
+      </button>
+    </div>
+
+    {mobileMenuOpen && (
+      <div className="md:hidden mt-4 pb-4 space-y-2">
+        <Link 
+          to="/challenges" 
+          onClick={() => setMobileMenuOpen(false)}
+          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+        >
+          All Challenges
+        </Link>
+        <Link 
+          to="/lessons" 
+          onClick={() => setMobileMenuOpen(false)}
+          className="block px-4 py-2 text-[#2364aa] bg-gray-100 rounded-lg font-semibold"
+        >
+          Lessons
+        </Link>
+        <Link 
+          to="/contact" 
+          onClick={() => setMobileMenuOpen(false)}
+          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+        >
+          Contact Us
+        </Link>
+      </div>
+    )}
+  </div>
+</nav>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
