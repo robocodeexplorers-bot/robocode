@@ -11,10 +11,28 @@ const ContactPage = () => {
     message: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Thank you for your message! We\'ll get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          'form-name': 'contact',
+          ...formData
+        }).toString()
+      });
+
+      if (response.ok) {
+        alert('Thank you for your message! We\'ll get back to you soon.');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        alert('Oops! Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      alert('Oops! Something went wrong. Please try again.');
+    }
   };
 
   const handleChange = (e) => {
@@ -35,7 +53,7 @@ const ContactPage = () => {
           <Code className="w-6 h-6 text-white" />
         </div>
         <span className="text-2xl font-bold text-[#2364aa]">
-          RoboCode
+          RoboCode Explorers
         </span>
       </Link>
       
@@ -116,7 +134,7 @@ const ContactPage = () => {
                 Send us an email and we'll respond within 24 hours.
               </p>
               <a href="mailto:hello@robocode.com" className="text-[#2364aa] font-semibold text-sm hover:underline">
-                hello@robocode.com
+                contactus@robocodeexolrers.com
               </a>
             </div>
 
@@ -138,7 +156,22 @@ const ContactPage = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form 
+                onSubmit={handleSubmit} 
+                className="space-y-6"
+                name="contact"
+                method="POST"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+              >
+                {/* Hidden fields for Netlify */}
+                <input type="hidden" name="form-name" value="contact" />
+                <p className="hidden">
+                  <label>
+                    Don't fill this out if you're human: <input name="bot-field" />
+                  </label>
+                </p>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -226,7 +259,7 @@ const ContactPage = () => {
                 <Code className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-[#2364aa]">
-                RoboCode
+                RoboCode Explorers
               </span>
             </div>
             <p className="text-gray-600 text-sm">
