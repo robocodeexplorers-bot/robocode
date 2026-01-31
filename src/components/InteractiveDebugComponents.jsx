@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, X, RotateCcw } from 'lucide-react';
 
-// Interactive Component 1: Drag and Drop Code Sequencer (Mobile + Desktop)
+// Interactive Component 1: Code Sequencer with Up/Down Buttons (Works on ALL devices)
 export const CodeSequencer = () => {
   const correctOrder = ['Get bread', 'Add peanut butter', 'Add jelly', 'Eat sandwich'];
   const [codeBlocks, setCodeBlocks] = useState([
@@ -10,52 +10,22 @@ export const CodeSequencer = () => {
     'Add jelly',
     'Add peanut butter'
   ]);
-  const [draggedItem, setDraggedItem] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
-  // Desktop drag handlers
-  const handleDragStart = (index) => {
-    setDraggedItem(index);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (dropIndex) => {
-    if (draggedItem === null) return;
-    
+  const moveUp = (index) => {
+    if (index === 0) return; // Already at top
     const newBlocks = [...codeBlocks];
-    const draggedBlock = newBlocks[draggedItem];
-    newBlocks.splice(draggedItem, 1);
-    newBlocks.splice(dropIndex, 0, draggedBlock);
-    
+    [newBlocks[index], newBlocks[index - 1]] = [newBlocks[index - 1], newBlocks[index]];
     setCodeBlocks(newBlocks);
-    setDraggedItem(null);
     setIsChecked(false);
   };
 
-  // Mobile touch handlers
-  const handleTouchStart = (e, index) => {
-    setDraggedItem(index);
-  };
-
-  const handleTouchMove = (e) => {
-    if (draggedItem === null) return;
-    e.preventDefault();
-  };
-
-  const handleTouchEnd = (e, dropIndex) => {
-    if (draggedItem === null) return;
-    
+  const moveDown = (index) => {
+    if (index === codeBlocks.length - 1) return; // Already at bottom
     const newBlocks = [...codeBlocks];
-    const draggedBlock = newBlocks[draggedItem];
-    newBlocks.splice(draggedItem, 1);
-    newBlocks.splice(dropIndex, 0, draggedBlock);
-    
+    [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
     setCodeBlocks(newBlocks);
-    setDraggedItem(null);
     setIsChecked(false);
   };
 
@@ -69,41 +39,54 @@ export const CodeSequencer = () => {
     setCodeBlocks(['Eat sandwich', 'Get bread', 'Add jelly', 'Add peanut butter']);
     setIsChecked(false);
     setIsCorrect(false);
-    setDraggedItem(null);
   };
 
   return (
     <div className="w-full max-w-2xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-teal-50 rounded-2xl">
       <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-        🥪 Fix the Sequence! Drag to Reorder
+        🥪 Fix the Sequence! Reorder the Steps
       </h3>
       <p className="text-gray-600 mb-6 text-center">
-        Put these steps in the correct order to make a sandwich
+        Use the ⬆️ and ⬇️ buttons to put these steps in the correct order
       </p>
       
       <div className="space-y-3 mb-6">
         {codeBlocks.map((block, index) => (
           <div
             key={index}
-            draggable
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={handleDragOver}
-            onDrop={() => handleDrop(index)}
-            onTouchStart={(e) => handleTouchStart(e, index)}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={(e) => handleTouchEnd(e, index)}
-            className={`bg-white p-4 rounded-xl border-2 cursor-move hover:border-[#2364aa] hover:shadow-lg transition-all duration-200 flex items-center gap-3 ${
-              draggedItem === index 
-                ? 'border-[#2364aa] shadow-xl scale-105 opacity-50' 
-                : 'border-gray-300'
-            }`}
-            style={{
-              touchAction: 'none',
-              userSelect: 'none'
-            }}
+            className="bg-white p-4 rounded-xl border-2 border-gray-300 shadow-sm flex items-center gap-3"
           >
-            <span className="text-2xl">☰</span>
-            <span className="font-semibold text-gray-800">{index + 1}. {block}</span>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => moveUp(index)}
+                disabled={index === 0}
+                className={`p-1 rounded transition-colors ${
+                  index === 0 
+                    ? 'text-gray-300 cursor-not-allowed' 
+                    : 'text-[#2364aa] hover:bg-[#2364aa] hover:text-white'
+                }`}
+                aria-label="Move up"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              <button
+                onClick={() => moveDown(index)}
+                disabled={index === codeBlocks.length - 1}
+                className={`p-1 rounded transition-colors ${
+                  index === codeBlocks.length - 1 
+                    ? 'text-gray-300 cursor-not-allowed' 
+                    : 'text-[#2364aa] hover:bg-[#2364aa] hover:text-white'
+                }`}
+                aria-label="Move down"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            <span className="font-semibold text-gray-800 flex-1">{index + 1}. {block}</span>
           </div>
         ))}
       </div>
@@ -234,7 +217,6 @@ export const BugSpotter = () => {
 // Interactive Component 3: Code Fixer (Click to Fix)
 export const CodeFixer = () => {
   const [isFixed, setIsFixed] = useState(false);
-  const [attempts, setAttempts] = useState(0);
 
   const buggyCode = `Repeat 5 times:
   Print "Hello"
@@ -246,7 +228,6 @@ Print "Goodbye"`;
 
   const handleFix = () => {
     setIsFixed(true);
-    setAttempts(attempts + 1);
   };
 
   const reset = () => {
