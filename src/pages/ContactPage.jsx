@@ -30,10 +30,11 @@ const ContactPage = () => {
       } else {
         alert('Oops! Something went wrong. Please try again.');
       }
- } catch (error) {
+   } catch (error) {
   console.error('Form submission error:', error);
   alert('Oops! Something went wrong. Please try again.');
 }
+  };
 
   const handleChange = (e) => {
     setFormData({
