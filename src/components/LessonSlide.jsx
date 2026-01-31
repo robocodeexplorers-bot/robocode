@@ -121,7 +121,11 @@ const LessonSlide = ({ lesson }) => {
                 {slide.options.map((option, index) => {
                   const isSelected = answers[currentSlide] === index;
                   const isCorrect = index === slide.correctAnswer;
-                  const showResult = isSelected;
+                  const hasAnswered = answers[currentSlide] !== undefined;
+                  
+                  // Show green for correct answer after answering, red only for selected wrong answer
+                  const showAsCorrect = hasAnswered && isCorrect;
+                  const showAsWrong = hasAnswered && isSelected && !isCorrect;
 
                   return (
                     <button
@@ -129,27 +133,34 @@ const LessonSlide = ({ lesson }) => {
                       onClick={() => handleQuizAnswer(index)}
                       disabled={answers[currentSlide] !== undefined}
                       className={`w-full p-4 rounded-xl text-left font-semibold transition-all ${
-                        showResult && isCorrect
+                        showAsCorrect
                           ? 'bg-green-100 border-2 border-green-500 text-green-700'
-                          : showResult && !isCorrect
+                          : showAsWrong
                           ? 'bg-red-100 border-2 border-red-500 text-red-700'
                           : 'bg-gray-100 hover:bg-gray-200 border-2 border-transparent'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span>{option}</span>
-                        {showResult && isCorrect && <Check className="w-6 h-6 text-green-600" />}
+                        {showAsCorrect && <Check className="w-6 h-6 text-green-600" />}
+                        {showAsWrong && <span className="text-2xl">❌</span>}
                       </div>
                     </button>
                   );
                 })}
               </div>
               {answers[currentSlide] !== undefined && (
-                <div className="mt-6 text-center">
-                  <p className="text-lg font-semibold text-[#2364aa]">
-                    {answers[currentSlide] === slide.correctAnswer ? '🎉 Correct!' : '💪 Good try!'}
+                <div className={`mt-6 p-4 rounded-xl ${
+                  answers[currentSlide] === slide.correctAnswer 
+                    ? 'bg-green-50 border-2 border-green-200' 
+                    : 'bg-red-50 border-2 border-red-200'
+                }`}>
+                  <p className={`text-lg font-bold mb-2 ${
+                    answers[currentSlide] === slide.correctAnswer ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {answers[currentSlide] === slide.correctAnswer ? '🎉 Correct!' : '❌ Not quite!'}
                   </p>
-                  <p className="text-gray-600 mt-2">{slide.explanation}</p>
+                  <p className="text-gray-700">{slide.explanation}</p>
                 </div>
               )}
             </div>

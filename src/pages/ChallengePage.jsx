@@ -10,8 +10,13 @@ const ChallengePage = () => {
   const [generatedCode, setGeneratedCode] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
-  const gameRef = useRef(null);
-  const phaserGameRef = useRef(null);
+  
+  // Separate refs for mobile and desktop
+  const gameRefMobile = useRef(null);
+  const gameRefDesktop = useRef(null);
+  const phaserGameMobile = useRef(null);
+  const phaserGameDesktop = useRef(null);
+  
   const robotStateRef = useRef({
     x: 0,
     y: 0,
@@ -22,14 +27,15 @@ const ChallengePage = () => {
 
   const challenge = challengeData[id] || challengeData['1'];
 
+  // Mobile Phaser instance
   useEffect(() => {
-    if (!gameRef.current || phaserGameRef.current) return;
+    if (!gameRefMobile.current || phaserGameMobile.current) return;
 
     const config = {
       type: Phaser.AUTO,
       width: 600,
       height: 600,
-      parent: gameRef.current,
+      parent: gameRefMobile.current,
       backgroundColor: '#f0f9ff',
       scene: {
         create: function() { createScene.call(this, id); },
@@ -40,12 +46,41 @@ const ChallengePage = () => {
       },
     };
 
-    phaserGameRef.current = new Phaser.Game(config);
+    phaserGameMobile.current = new Phaser.Game(config);
 
     return () => {
-      if (phaserGameRef.current) {
-        phaserGameRef.current.destroy(true);
-        phaserGameRef.current = null;
+      if (phaserGameMobile.current) {
+        phaserGameMobile.current.destroy(true);
+        phaserGameMobile.current = null;
+      }
+    };
+  }, [id]);
+
+  // Desktop Phaser instance
+  useEffect(() => {
+    if (!gameRefDesktop.current || phaserGameDesktop.current) return;
+
+    const config = {
+      type: Phaser.AUTO,
+      width: 600,
+      height: 600,
+      parent: gameRefDesktop.current,
+      backgroundColor: '#f0f9ff',
+      scene: {
+        create: function() { createScene.call(this, id); },
+      },
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
+    };
+
+    phaserGameDesktop.current = new Phaser.Game(config);
+
+    return () => {
+      if (phaserGameDesktop.current) {
+        phaserGameDesktop.current.destroy(true);
+        phaserGameDesktop.current = null;
       }
     };
   }, [id]);
@@ -115,7 +150,8 @@ const ChallengePage = () => {
 
     setIsRunning(true);
 
-    const scene = phaserGameRef.current?.scene?.scenes[0];
+    // Get the active scene (try mobile first, then desktop)
+    const scene = phaserGameMobile.current?.scene?.scenes[0] || phaserGameDesktop.current?.scene?.scenes[0];
     if (!scene) return;
 
     robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
@@ -242,7 +278,7 @@ const ChallengePage = () => {
   };
 
   const handleReset = () => {
-    const scene = phaserGameRef.current?.scene?.scenes[0];
+    const scene = phaserGameMobile.current?.scene?.scenes[0] || phaserGameDesktop.current?.scene?.scenes[0];
     if (scene) {
       robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
       
@@ -299,7 +335,7 @@ const ChallengePage = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
             <div 
-              ref={gameRef} 
+              ref={gameRefMobile}
               className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
             />
             <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
@@ -379,7 +415,7 @@ const ChallengePage = () => {
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 min-h-[400px]">
+              <div className="bg-gray-50 rounded-xl p-4 min-h-[400px] relative overflow-hidden">
                 {mode === 'blocks' ? (
                   <BlocklyEditor onCodeChange={setGeneratedCode} />
                 ) : (
@@ -410,13 +446,13 @@ const ChallengePage = () => {
             </div>
           </div>
 
-       {/* Right Column - Robot Simulator for Desktop */}
-<div className="bg-white rounded-2xl shadow-lg p-6">
-  <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
-  <div 
-    id="phaser-desktop"
-    className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
-  />
+          {/* Right Column - Robot Simulator for Desktop */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">🤖 Robot Simulator</h2>
+            <div 
+              ref={gameRefDesktop}
+              className="bg-blue-50 rounded-xl overflow-hidden border-4 border-gray-200"
+            />
             <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-[#2364aa]"></div>
@@ -492,7 +528,8 @@ const ChallengePage = () => {
               </div>
             </div>
 
-<div className="bg-gray-50 rounded-xl p-4 min-h-[400px] relative overflow-hidden">              {mode === 'blocks' ? (
+            <div className="bg-gray-50 rounded-xl p-4 min-h-[400px] relative overflow-hidden">
+              {mode === 'blocks' ? (
                 <BlocklyEditor onCodeChange={setGeneratedCode} />
               ) : (
                 <pre className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto min-h-[400px]">
