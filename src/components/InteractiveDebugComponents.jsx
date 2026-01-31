@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, X, RotateCcw } from 'lucide-react';
 
-// Interactive Component 1: Drag and Drop Code Sequencer
+// Interactive Component 1: Drag and Drop Code Sequencer (Mobile + Desktop)
 export const CodeSequencer = () => {
   const correctOrder = ['Get bread', 'Add peanut butter', 'Add jelly', 'Eat sandwich'];
   const [codeBlocks, setCodeBlocks] = useState([
@@ -14,6 +14,7 @@ export const CodeSequencer = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
+  // Desktop drag handlers
   const handleDragStart = (index) => {
     setDraggedItem(index);
   };
@@ -23,6 +24,29 @@ export const CodeSequencer = () => {
   };
 
   const handleDrop = (dropIndex) => {
+    if (draggedItem === null) return;
+    
+    const newBlocks = [...codeBlocks];
+    const draggedBlock = newBlocks[draggedItem];
+    newBlocks.splice(draggedItem, 1);
+    newBlocks.splice(dropIndex, 0, draggedBlock);
+    
+    setCodeBlocks(newBlocks);
+    setDraggedItem(null);
+    setIsChecked(false);
+  };
+
+  // Mobile touch handlers
+  const handleTouchStart = (e, index) => {
+    setDraggedItem(index);
+  };
+
+  const handleTouchMove = (e) => {
+    if (draggedItem === null) return;
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e, dropIndex) => {
     if (draggedItem === null) return;
     
     const newBlocks = [...codeBlocks];
@@ -45,6 +69,7 @@ export const CodeSequencer = () => {
     setCodeBlocks(['Eat sandwich', 'Get bread', 'Add jelly', 'Add peanut butter']);
     setIsChecked(false);
     setIsCorrect(false);
+    setDraggedItem(null);
   };
 
   return (
@@ -64,7 +89,18 @@ export const CodeSequencer = () => {
             onDragStart={() => handleDragStart(index)}
             onDragOver={handleDragOver}
             onDrop={() => handleDrop(index)}
-            className="bg-white p-4 rounded-xl border-2 border-gray-300 cursor-move hover:border-[#2364aa] hover:shadow-lg transition-all duration-200 flex items-center gap-3"
+            onTouchStart={(e) => handleTouchStart(e, index)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={(e) => handleTouchEnd(e, index)}
+            className={`bg-white p-4 rounded-xl border-2 cursor-move hover:border-[#2364aa] hover:shadow-lg transition-all duration-200 flex items-center gap-3 ${
+              draggedItem === index 
+                ? 'border-[#2364aa] shadow-xl scale-105 opacity-50' 
+                : 'border-gray-300'
+            }`}
+            style={{
+              touchAction: 'none',
+              userSelect: 'none'
+            }}
           >
             <span className="text-2xl">☰</span>
             <span className="font-semibold text-gray-800">{index + 1}. {block}</span>
