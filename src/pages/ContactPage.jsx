@@ -135,7 +135,7 @@ const ContactPage = () => {
                 Send us an email and we'll respond within 24 hours.
               </p>
               <a href="mailto:hello@robocode.com" className="text-[#2364aa] font-semibold text-sm hover:underline">
-                contactus@robocodeexolrers.com
+                contactus@robocodeexplorers.com
               </a>
             </div>
 

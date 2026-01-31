@@ -30,11 +30,11 @@ const SequencesLesson = () => {
         options: [
           '🍞 Eat it → Add peanut butter → Get bread',
           '🥜 Add peanut butter → Get bread → Eat it',
-          '✅ Get bread → Add peanut butter → Eat it',
+          '🥪 Get bread → Add peanut butter → Eat it',
           '🔄 It doesn\'t matter what order!'
         ],
         correctAnswer: 2,
-        explanation: 'Perfect! You need to follow the steps in the right sequence, or your sandwich won\'t work!'
+        explanation: 'The correct answer is: Get bread → Add peanut butter → Eat it. You need to follow the steps in the right sequence, or your sandwich won\'t work!'
       },
       {
         type: 'image',
@@ -55,11 +55,11 @@ const SequencesLesson = () => {
         options: [
           '🤸 Jump first, then move',
           '↪️ Turn left, then move forward',
-          '✅ Move forward, turn left, then jump',
+          '🤖 Move forward, turn left, then jump',
           '🎲 Do them in any random order'
         ],
         correctAnswer: 2,
-        explanation: 'Yes! The robot follows instructions in sequence: forward first, then left, then jump!'
+        explanation: 'The robot follows instructions in sequence: move forward first, then turn left, then jump. Order matters!'
       },
       {
         type: 'image',
@@ -79,12 +79,12 @@ const SequencesLesson = () => {
         question: 'You want a character to jump over a wall. What\'s the correct sequence?',
         options: [
           '🧱 Land → Jump → Run to wall',
-          '✅ Run to wall → Jump → Land',
+          '🏃 Run to wall → Jump → Land',
           '🦘 Jump → Land → Run to wall',
-          '🏃 Run to wall → Land → Jump'
+          '🔀 Run to wall → Land → Jump'
         ],
         correctAnswer: 1,
-        explanation: 'Exactly right! First run to the wall, then jump over it, then land safely on the other side!'
+        explanation: 'The correct sequence is: Run to wall → Jump → Land. First get to the wall, then jump over it, then land safely!'
       },
       {
         type: 'image',
@@ -105,11 +105,11 @@ const SequencesLesson = () => {
         options: [
           '🪥 Brush → Get toothbrush → Add toothpaste',
           '💦 Rinse → Brush → Get toothbrush',
-          '✅ Get toothbrush → Add toothpaste → Brush → Rinse',
+          '🦷 Get toothbrush → Add toothpaste → Brush → Rinse',
           '🔄 Any order works!'
         ],
         correctAnswer: 2,
-        explanation: 'Perfect sequence! Each step must happen in the right order to brush your teeth properly!'
+        explanation: 'The correct sequence is: Get toothbrush → Add toothpaste → Brush → Rinse. Each step must happen in the right order!'
       },
       {
         type: 'image',

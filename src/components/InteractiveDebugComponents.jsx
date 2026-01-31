@@ -157,7 +157,7 @@ export const BugSpotter = () => {
         🔍 Spot the Bug!
       </h3>
       <p className="text-gray-600 mb-6 text-center">
-        Goal: Move forward, turn RIGHT, move forward. Click the buggy line!
+        Goal: Move forward, turn RIGHT, turn LEFT, move forward. Click the buggy line!
       </p>
 
       <div className="bg-gray-900 p-6 rounded-xl mb-4 font-mono">
