@@ -20,27 +20,33 @@ const HomePage = () => {
         </span>
       </Link>
       
-      {/* Desktop Navigation Links */}
-      <div className="hidden md:flex items-center gap-6">
-        <Link 
-          to="/challenges" 
-          className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
-        >
-          All Challenges
-        </Link>
-        <Link 
-          to="/lessons" 
-          className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
-        >
-          Lessons
-        </Link>
-        <Link 
-          to="/contact" 
-          className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
-        >
-          Contact Us
-        </Link>
-      </div>
+     {/* Desktop Navigation Links */}
+<div className="hidden md:flex items-center gap-6">
+  <Link 
+    to="/challenges" 
+    className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
+  >
+    All Challenges
+  </Link>
+  <Link 
+    to="/playground" 
+    className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
+  >
+   Coding Playground
+  </Link>
+  <Link 
+    to="/lessons" 
+    className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
+  >
+    Lessons
+  </Link>
+  <Link 
+    to="/contact" 
+    className="text-gray-700 hover:text-[#2364aa] font-semibold transition-colors"
+  >
+    Contact Us
+  </Link>
+</div>
 
       {/* Mobile Menu Button */}
       <button 
@@ -53,32 +59,39 @@ const HomePage = () => {
       </button>
     </div>
 
-    {/* Mobile Menu Dropdown */}
-    {mobileMenuOpen && (
-      <div className="md:hidden mt-4 pb-4 space-y-2">
-        <Link 
-          to="/challenges" 
-          onClick={() => setMobileMenuOpen(false)}
-          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
-        >
-          All Challenges
-        </Link>
-        <Link 
-          to="/lessons" 
-          onClick={() => setMobileMenuOpen(false)}
-          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
-        >
-          Lessons
-        </Link>
-        <Link 
-          to="/contact" 
-          onClick={() => setMobileMenuOpen(false)}
-          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
-        >
-          Contact Us
-        </Link>
-      </div>
-    )}
+{/* Mobile Menu Dropdown */}
+{mobileMenuOpen && (
+  <div className="md:hidden mt-4 pb-4 space-y-2">
+    <Link 
+      to="/challenges" 
+      onClick={() => setMobileMenuOpen(false)}
+      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+    >
+      All Challenges
+    </Link>
+    <Link 
+      to="/playground" 
+      onClick={() => setMobileMenuOpen(false)}
+      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+    >
+      Coding Playground
+    </Link>
+    <Link 
+      to="/lessons" 
+      onClick={() => setMobileMenuOpen(false)}
+      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+    >
+      Lessons
+    </Link>
+    <Link 
+      to="/contact" 
+      onClick={() => setMobileMenuOpen(false)}
+      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+    >
+      Contact Us
+    </Link>
+  </div>
+)}
   </div>
 </nav>
 

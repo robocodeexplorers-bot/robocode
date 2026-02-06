@@ -91,6 +91,9 @@ const ChallengePage = () => {
     const cols = 10;
     const rows = 10;
 
+    // Store scene reference immediately
+    gameObjectsRef.current = scene;
+
     const graphics = scene.add.graphics();
     graphics.lineStyle(1, 0xcccccc, 0.5);
     
@@ -110,7 +113,100 @@ const ChallengePage = () => {
     scene.arrow = arrow;
     scene.gridSize = gridSize;
 
-    if (challengeId === '3') {
+    if (challengeId === '2') {
+      // Challenge 2: Turn Around - L-shaped path
+      const target = scene.add.star(270, 270, 5, 15, 25, 0xfec601);
+      target.setStrokeStyle(2, 0xffffff);
+      scene.target = target;
+      scene.targetX = 4;
+      scene.targetY = 4;
+      scene.challengeType = 'reach';
+      
+      // Add visual path hints (optional - light guide)
+      const pathGraphics = scene.add.graphics();
+      pathGraphics.lineStyle(3, 0x3da5d9, 0.15);
+      // Horizontal line right
+      pathGraphics.lineBetween(30, 30, 270, 30);
+      // Vertical line down
+      pathGraphics.lineBetween(270, 30, 270, 270);
+    } else if (challengeId === '4') {
+      // Challenge 4: Loops Basics - straight line with loops
+      const target = scene.add.star(450, 30, 5, 15, 25, 0xfec601);
+      target.setStrokeStyle(2, 0xffffff);
+      scene.target = target;
+      scene.targetX = 7;
+      scene.targetY = 0;
+      scene.challengeType = 'reach';
+      
+      // Add visual path hint
+      const pathGraphics = scene.add.graphics();
+      pathGraphics.lineStyle(3, 0x3da5d9, 0.15);
+      pathGraphics.lineBetween(30, 30, 450, 30);
+    } else if (challengeId === '5') {
+      // Challenge 5: Obstacle Course - navigate around walls
+      const target = scene.add.star(510, 510, 5, 15, 25, 0xfec601);
+      target.setStrokeStyle(2, 0xffffff);
+      scene.target = target;
+      scene.targetX = 8;
+      scene.targetY = 8;
+      scene.challengeType = 'reach';
+      
+      // Create walls - vertical wall in the middle
+      const wallPositions = [
+        { x: 4, y: 1 },
+        { x: 4, y: 2 },
+        { x: 4, y: 3 },
+        { x: 4, y: 4 },
+        { x: 4, y: 5 },
+        { x: 4, y: 6 },
+        { x: 4, y: 7 },
+      ];
+      
+      const walls = wallPositions.map(pos => {
+        const wall = scene.add.rectangle(
+          pos.x * gridSize + 30,
+          pos.y * gridSize + 30,
+          50, 50, 0x8b4513
+        );
+        wall.setStrokeStyle(2, 0x654321);
+        wall.gridX = pos.x;
+        wall.gridY = pos.y;
+        return wall;
+      });
+      
+      scene.walls = walls;
+      scene.wallPositions = wallPositions;
+    } else if (challengeId === '6') {
+      // Challenge 6: Conditional Thinking - use if/else to navigate
+      const target = scene.add.star(510, 30, 5, 15, 25, 0xfec601);
+      target.setStrokeStyle(2, 0xffffff);
+      scene.target = target;
+      scene.targetX = 8;
+      scene.targetY = 0;
+      scene.challengeType = 'reach';
+      
+      // Create a corridor with random walls
+      const wallPositions = [
+        { x: 2, y: 0 },
+        { x: 4, y: 0 },
+        { x: 6, y: 0 },
+      ];
+      
+      const walls = wallPositions.map(pos => {
+        const wall = scene.add.rectangle(
+          pos.x * gridSize + 30,
+          pos.y * gridSize + 30,
+          50, 50, 0x8b4513
+        );
+        wall.setStrokeStyle(2, 0x654321);
+        wall.gridX = pos.x;
+        wall.gridY = pos.y;
+        return wall;
+      });
+      
+      scene.walls = walls;
+      scene.wallPositions = wallPositions;
+    } else if (challengeId === '3') {
       const starPositions = [
         { x: 3, y: 2 },
         { x: 7, y: 5 },
@@ -133,13 +229,14 @@ const ChallengePage = () => {
       scene.stars = stars;
       scene.challengeType = 'collect';
     } else {
+      // Challenge 1: Straight line to corner
       const target = scene.add.star(570, 570, 5, 15, 25, 0xfec601);
       target.setStrokeStyle(2, 0xffffff);
       scene.target = target;
+      scene.targetX = 9;
+      scene.targetY = 9;
       scene.challengeType = 'reach';
     }
-
-    gameObjectsRef.current = scene;
   }
 
   const handleRunCode = async () => {
@@ -150,67 +247,152 @@ const ChallengePage = () => {
 
     setIsRunning(true);
 
-    // Get the active scene (try mobile first, then desktop)
-    const scene = phaserGameMobile.current?.scene?.scenes[0] || phaserGameDesktop.current?.scene?.scenes[0];
-    if (!scene) return;
+    // Get both scenes - we need to update both mobile and desktop
+    const sceneMobile = phaserGameMobile.current?.scene?.scenes[0];
+    const sceneDesktop = phaserGameDesktop.current?.scene?.scenes[0];
+    const activeScene = sceneMobile || sceneDesktop;
+    
+    if (!activeScene) {
+      console.error('No scene available');
+      setIsRunning(false);
+      return;
+    }
 
     robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
     
-    if (scene.stars) {
-      scene.stars.forEach(star => {
-        star.collected = false;
-        star.setVisible(true);
-        star.setAlpha(1);
-      });
-    }
-    
-    updateRobotVisual(scene);
+    // Reset stars in both scenes if they exist
+    [sceneMobile, sceneDesktop].forEach(scene => {
+      if (scene?.stars) {
+        scene.stars.forEach(star => {
+          star.collected = false;
+          star.setVisible(true);
+          star.setAlpha(1);
+        });
+      }
+      if (scene) {
+        updateRobotVisual(scene);
+      }
+    });
 
     const robot = {
       moveForward: async () => {
         const dir = robotStateRef.current.direction;
-        if (dir === 0) robotStateRef.current.x++;
-        else if (dir === 90) robotStateRef.current.y++;
-        else if (dir === 180) robotStateRef.current.x--;
-        else if (dir === 270) robotStateRef.current.y--;
+        const currentX = robotStateRef.current.x;
+        const currentY = robotStateRef.current.y;
+        
+        // Calculate next position
+        let nextX = currentX;
+        let nextY = currentY;
+        
+        // Direction: 0=right, 90=down, 180=left, 270=up
+        if (dir === 0) nextX++;      // Right
+        else if (dir === 90) nextY++; // Down
+        else if (dir === 180) nextX--; // Left
+        else if (dir === 270) nextY--; // Up
 
-        robotStateRef.current.x = Math.max(0, Math.min(9, robotStateRef.current.x));
-        robotStateRef.current.y = Math.max(0, Math.min(9, robotStateRef.current.y));
+        // Keep within grid bounds
+        nextX = Math.max(0, Math.min(9, nextX));
+        nextY = Math.max(0, Math.min(9, nextY));
+        
+        // Check for wall collision
+        const hitWall = activeScene.wallPositions?.some(wall => 
+          wall.x === nextX && wall.y === nextY
+        );
+        
+        if (hitWall) {
+          console.log('Cannot move - wall detected at:', nextX, nextY);
+          // Robot bumps into wall but doesn't move
+          await new Promise(resolve => setTimeout(resolve, 200));
+          return;
+        }
+        
+        // Move to next position
+        robotStateRef.current.x = nextX;
+        robotStateRef.current.y = nextY;
 
-        await animateRobot(scene);
+        console.log('Robot moved to:', robotStateRef.current.x, robotStateRef.current.y, 'direction:', dir);
+        
+        // Animate both scenes
+        const promises = [];
+        if (sceneMobile) promises.push(animateRobot(sceneMobile));
+        if (sceneDesktop) promises.push(animateRobot(sceneDesktop));
+        await Promise.all(promises);
+        await new Promise(resolve => setTimeout(resolve, 350)); // Longer delay to ensure animation completes
       },
       turnLeft: async () => {
         robotStateRef.current.direction = (robotStateRef.current.direction + 270) % 360;
-        await animateRobot(scene);
+        console.log('Turned left, now facing:', robotStateRef.current.direction);
+        
+        // Animate both scenes
+        const promises = [];
+        if (sceneMobile) promises.push(animateRobot(sceneMobile));
+        if (sceneDesktop) promises.push(animateRobot(sceneDesktop));
+        await Promise.all(promises);
+        await new Promise(resolve => setTimeout(resolve, 250)); // Delay for turn
       },
       turnRight: async () => {
         robotStateRef.current.direction = (robotStateRef.current.direction + 90) % 360;
-        await animateRobot(scene);
+        console.log('Turned right, now facing:', robotStateRef.current.direction);
+        
+        // Animate both scenes
+        const promises = [];
+        if (sceneMobile) promises.push(animateRobot(sceneMobile));
+        if (sceneDesktop) promises.push(animateRobot(sceneDesktop));
+        await Promise.all(promises);
+        await new Promise(resolve => setTimeout(resolve, 250)); // Delay for turn
       },
       collect: async () => {
-        if (scene.stars) {
-          const robotX = robotStateRef.current.x;
-          const robotY = robotStateRef.current.y;
-          
-          scene.stars.forEach(star => {
-            if (!star.collected && star.gridX === robotX && star.gridY === robotY) {
-              star.collected = true;
-              robotStateRef.current.starsCollected++;
-              
-              scene.tweens.add({
-                targets: star,
-                alpha: 0,
-                scale: 2,
-                duration: 300,
-                ease: 'Power2',
-                onComplete: () => {
-                  star.setVisible(false);
-                }
-              });
-            }
-          });
-        }
+        [sceneMobile, sceneDesktop].forEach(scene => {
+          if (scene?.stars) {
+            const robotX = robotStateRef.current.x;
+            const robotY = robotStateRef.current.y;
+            
+            scene.stars.forEach(star => {
+              if (!star.collected && star.gridX === robotX && star.gridY === robotY) {
+                star.collected = true;
+                robotStateRef.current.starsCollected++;
+                
+                scene.tweens.add({
+                  targets: star,
+                  alpha: 0,
+                  scale: 2,
+                  duration: 300,
+                  ease: 'Power2',
+                  onComplete: () => {
+                    star.setVisible(false);
+                  }
+                });
+              }
+            });
+          }
+        });
         await new Promise(resolve => setTimeout(resolve, 300));
+      },
+      checkWall: async () => {
+        const dir = robotStateRef.current.direction;
+        const currentX = robotStateRef.current.x;
+        const currentY = robotStateRef.current.y;
+        
+        // Calculate position ahead
+        let aheadX = currentX;
+        let aheadY = currentY;
+        
+        if (dir === 0) aheadX++;      // Right
+        else if (dir === 90) aheadY++; // Down
+        else if (dir === 180) aheadX--; // Left
+        else if (dir === 270) aheadY--; // Up
+        
+        // Check if ahead position is out of bounds
+        if (aheadX < 0 || aheadX > 9 || aheadY < 0 || aheadY > 9) {
+          return true; // Wall (edge of grid)
+        }
+        
+        // Check if there's a wall at that position
+        const hasWall = activeScene.wallPositions?.some(wall => 
+          wall.x === aheadX && wall.y === aheadY
+        );
+        
+        return hasWall || false;
       },
     };
 
@@ -220,18 +402,33 @@ const ChallengePage = () => {
       await executeCode(robot);
 
       setTimeout(() => {
-        if (scene.challengeType === 'collect') {
-          const totalStars = scene.stars.length;
-          if (robotStateRef.current.starsCollected === totalStars) {
+        console.log('=== CHECKING WIN CONDITION ===');
+        console.log('Robot final position:', robotStateRef.current.x, robotStateRef.current.y);
+        console.log('Active scene targetX:', activeScene.targetX);
+        console.log('Active scene targetY:', activeScene.targetY);
+        console.log('Challenge type:', activeScene.challengeType);
+        
+        if (activeScene.challengeType === 'collect') {
+          const totalStars = activeScene.stars.length;
+          const collected = robotStateRef.current.starsCollected;
+          
+          if (collected === totalStars) {
             alert(`🎉 Amazing! You collected all ${totalStars} stars!`);
+          } else if (collected > 0) {
+            alert(`Good progress! You collected ${collected} out of ${totalStars} stars. Keep going - you're almost there!`);
           } else {
-            alert(`You collected ${robotStateRef.current.starsCollected} out of ${totalStars} stars. Try again!`);
+            alert(`You haven't collected any stars yet. Remember to move to a star's location and use the "Collect Star ⭐" block!`);
           }
         } else {
-          if (robotStateRef.current.x === 9 && robotStateRef.current.y === 9) {
+          // Use explicit undefined check for targetY since 0 is a valid value
+          const targetX = activeScene.targetX !== undefined ? activeScene.targetX : 9;
+          const targetY = activeScene.targetY !== undefined ? activeScene.targetY : 9;
+          console.log('Calculated target:', targetX, targetY);
+          
+          if (robotStateRef.current.x === targetX && robotStateRef.current.y === targetY) {
             alert('🎉 Congratulations! You completed the challenge!');
           } else {
-            alert('Try again! The robot needs to reach the yellow star.');
+            alert(`Try again! The robot needs to reach the yellow star. Robot is at (${robotStateRef.current.x}, ${robotStateRef.current.y}), target is at (${targetX}, ${targetY})`);
           }
         }
       }, 500);
@@ -245,19 +442,44 @@ const ChallengePage = () => {
 
   const animateRobot = (scene) => {
     return new Promise((resolve) => {
+      if (!scene || !scene.robot) {
+        console.error('Scene or robot not available');
+        resolve();
+        return;
+      }
+
       const gridSize = scene.gridSize;
       const targetX = robotStateRef.current.x * gridSize + 30;
       const targetY = robotStateRef.current.y * gridSize + 30;
+      const currentX = scene.robot.x;
+      const currentY = scene.robot.y;
 
-      scene.tweens.add({
-        targets: [scene.robot, scene.arrow],
-        x: targetX,
-        y: targetY,
-        duration: 300,
-        ease: 'Power2',
-        onComplete: resolve,
-      });
+      console.log('Animating from:', currentX, currentY, 'to:', targetX, targetY);
 
+      // Only animate the coordinate that changed
+      const animateProps = {};
+      if (currentX !== targetX) {
+        animateProps.x = targetX;
+      }
+      if (currentY !== targetY) {
+        animateProps.y = targetY;
+      }
+
+      // If position changed, animate it
+      if (Object.keys(animateProps).length > 0) {
+        scene.tweens.add({
+          targets: [scene.robot, scene.arrow],
+          ...animateProps,
+          duration: 400, // Increased duration for smoother animation
+          ease: 'Linear',
+          onComplete: resolve,
+        });
+      } else {
+        // Just turning, no position change
+        resolve();
+      }
+
+      // Always animate rotation separately
       scene.tweens.add({
         targets: scene.arrow,
         angle: robotStateRef.current.direction,
@@ -278,21 +500,26 @@ const ChallengePage = () => {
   };
 
   const handleReset = () => {
-    const scene = phaserGameMobile.current?.scene?.scenes[0] || phaserGameDesktop.current?.scene?.scenes[0];
-    if (scene) {
-      robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
-      
-      if (scene.stars) {
-        scene.stars.forEach(star => {
-          star.collected = false;
-          star.setVisible(true);
-          star.setAlpha(1);
-          star.setScale(1);
-        });
+    const sceneMobile = phaserGameMobile.current?.scene?.scenes[0];
+    const sceneDesktop = phaserGameDesktop.current?.scene?.scenes[0];
+    
+    robotStateRef.current = { x: 0, y: 0, direction: 0, starsCollected: 0 };
+    
+    // Reset both scenes
+    [sceneMobile, sceneDesktop].forEach(scene => {
+      if (scene) {
+        if (scene.stars) {
+          scene.stars.forEach(star => {
+            star.collected = false;
+            star.setVisible(true);
+            star.setAlpha(1);
+            star.setScale(1);
+          });
+        }
+        updateRobotVisual(scene);
       }
-      
-      updateRobotVisual(scene);
-    }
+    });
+    
     setIsRunning(false);
   };
 
@@ -302,7 +529,7 @@ const ChallengePage = () => {
       <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 text-[#2364aa] hover:text-[#3da5d9] transition-colors">
+            <Link to="/challenges" className="flex items-center gap-2 text-[#2364aa] hover:text-[#3da5d9] transition-colors">
               <ArrowLeft className="w-5 h-5" />
               <span className="font-semibold">Back to Challenges</span>
             </Link>
@@ -415,7 +642,7 @@ const ChallengePage = () => {
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-xl p-4 min-h-[400px] relative overflow-hidden">
+              <div className="bg-gray-50 rounded-xl p-4 min-h-[500px] relative overflow-hidden">
                 {mode === 'blocks' ? (
                   <BlocklyEditor onCodeChange={setGeneratedCode} />
                 ) : (
@@ -528,7 +755,7 @@ const ChallengePage = () => {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-4 min-h-[400px] relative overflow-hidden">
+            <div className="bg-gray-50 rounded-xl p-4 min-h-[500px] relative overflow-hidden">
               {mode === 'blocks' ? (
                 <BlocklyEditor onCodeChange={setGeneratedCode} />
               ) : (
@@ -582,10 +809,11 @@ const challengeData = {
     difficulty: 'Beginner',
     difficultyColor: 'bg-[#73bfb8]/20 text-[#73bfb8]',
     instructions: [
-      'This time the target is not in a straight line',
-      'Use "Move Forward" blocks to move',
-      'Use "Turn Right" or "Turn Left" blocks to change direction',
-      'Reach the target to win!'
+      'The target is in a different location - follow the path to reach it!',
+      'Your robot starts facing right. Use "Move Forward" 4 times to move across',
+      'Use "Turn Right" to face downward',
+      'Use "Move Forward" 4 more times to reach the yellow star',
+      'Remember: the robot always moves in the direction it\'s facing!'
     ],
   },
   '3': {
@@ -598,6 +826,45 @@ const challengeData = {
       'Move your robot to a star\'s location',
       'Use the "Collect Star ⭐" block to pick it up',
       'Collect all 3 stars to complete the challenge!'
+    ],
+  },
+  '4': {
+    title: 'Loops Basics',
+    description: 'Use loops to repeat actions efficiently.',
+    difficulty: 'Easy',
+    difficultyColor: 'bg-[#3da5d9]/20 text-[#3da5d9]',
+    instructions: [
+      'The target is 7 spaces to the right - that\'s a lot of "Move Forward" blocks!',
+      'Instead of dragging 7 separate blocks, use a LOOP to repeat the action',
+      'Drag a "Repeat" loop block and set it to repeat 7 times',
+      'Put a "Move Forward" block inside the loop',
+      'This is much more efficient than using 7 separate blocks!'
+    ],
+  },
+  '5': {
+    title: 'Obstacle Course',
+    description: 'Navigate around walls using smart pathfinding.',
+    difficulty: 'Medium',
+    difficultyColor: 'bg-[#fec601]/20 text-[#fec601]',
+    instructions: [
+      'There\'s a wall blocking the direct path to the target!',
+      'The brown wall blocks your robot - you can\'t move through it',
+      'You need to go AROUND the wall to reach the star',
+      'Plan your path: move right, then down around the wall, then continue to the target',
+      'Use loops and turns to navigate efficiently around the obstacle!'
+    ],
+  },
+  '6': {
+    title: 'Conditional Thinking',
+    description: 'Make decisions with if/else statements.',
+    difficulty: 'Hard',
+    difficultyColor: 'bg-[#ea7317]/20 text-[#ea7317]',
+    instructions: [
+      'The robot needs to navigate a corridor with walls in random places!',
+      'Use the "if wall ahead" block to check if there\'s a wall in front',
+      'If there IS a wall: turn right to go around it',
+      'If there is NO wall: move forward',
+      'Put this if/else inside a loop to keep checking and moving until you reach the target!'
     ],
   },
 };

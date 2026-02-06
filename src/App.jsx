@@ -11,6 +11,7 @@ import LoopsLesson from './pages/lessons/LoopsLesson';
 import ConditionalLogicLesson from './pages/lessons/Conditionallogiclesson';
 import DebuggingLesson from './pages/lessons/Debugginglesson';
 import ProblemSolvingLesson from './pages/lessons/Problemsolvinglesson';
+import PlaygroundPage from './pages/Playgroundpage';
 
 
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/lessons/conditional-logic" element={<ConditionalLogicLesson />} />
         <Route path="/lessons/debugging" element={<DebuggingLesson />} />
         <Route path="/lessons/problem-solving" element={<ProblemSolvingLesson />} />
+        <Route path="/playground" element={<PlaygroundPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </Router>

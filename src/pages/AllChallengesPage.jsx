@@ -168,8 +168,8 @@ const allChallenges = [
   },
   {
     id: 4,
-    title: "Loops Basics",
-    description: "Use loops to repeat actions efficiently.",
+    title: "Loop Basics",
+    description: "Learn to use loops to repeat actions efficiently instead of writing the same code multiple times!",
     difficulty: "Easy",
     difficultyColor: "bg-[#3da5d9]/20 text-[#3da5d9]",
     color: "bg-[#3da5d9]"
@@ -177,7 +177,7 @@ const allChallenges = [
   {
     id: 5,
     title: "Obstacle Course",
-    description: "Navigate around walls using smart pathfinding.",
+    description: "Navigate around walls to reach the target. Plan your path carefully!",
     difficulty: "Medium",
     difficultyColor: "bg-[#fec601]/20 text-[#fec601]",
     color: "bg-[#fec601]"
@@ -185,8 +185,8 @@ const allChallenges = [
   {
     id: 6,
     title: "Conditional Thinking",
-    description: "Make decisions with if/else statements.",
-    difficulty: "Medium",
+    description: "Use if/else statements to make smart decisions and navigate around obstacles!",
+    difficulty: "Hard",
     difficultyColor: "bg-[#ea7317]/20 text-[#ea7317]",
     color: "bg-[#ea7317]"
   }
