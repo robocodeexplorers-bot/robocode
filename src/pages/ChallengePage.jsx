@@ -229,12 +229,12 @@ const ChallengePage = () => {
       scene.stars = stars;
       scene.challengeType = 'collect';
     } else {
-      // Challenge 1: Straight line to corner
-      const target = scene.add.star(570, 570, 5, 15, 25, 0xfec601);
+      // Challenge 1: Simple straight line - top right corner
+      const target = scene.add.star(570, 30, 5, 15, 25, 0xfec601);
       target.setStrokeStyle(2, 0xffffff);
       scene.target = target;
       scene.targetX = 9;
-      scene.targetY = 9;
+      scene.targetY = 0;
       scene.challengeType = 'reach';
     }
   }
@@ -797,10 +797,11 @@ const challengeData = {
     difficulty: 'Beginner',
     difficultyColor: 'bg-[#73bfb8]/20 text-[#73bfb8]',
     instructions: [
-      'Look at the grid on the right - your robot (blue circle) needs to reach the target (yellow star)',
-      'Use the "Move Forward" block to make your robot move',
-      'Click "Run Code" to test your solution',
-      'The robot should end up on the target to complete the challenge!'
+      'Welcome! Your robot (blue circle) starts in the top-left corner',
+      'The yellow star is your target - it\'s 9 spaces to the right',
+      'Drag "Move Forward" blocks from the left into the workspace',
+      'Stack 9 "Move Forward" blocks on top of each other',
+      'Click the "Run Code" button to make your robot move!'
     ],
   },
   '2': {
